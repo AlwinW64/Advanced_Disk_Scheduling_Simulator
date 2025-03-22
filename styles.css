@@ -1,1 +1,19 @@
 /* Stylesheet for Advanced Disk Scheduling Simulator */
+*
+{
+    margin: 0px;
+}
+
+header{
+    height: 50px;
+    background-color: aqua;
+}
+
+#algorithms
+{
+    margin: 20px;
+    background-color: bisque;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+}
