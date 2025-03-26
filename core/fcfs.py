@@ -7,3 +7,4 @@ def fcfs(requests, head):
         sequence.append(request)
         head = request
     return sequence, total_seek_time
+a
