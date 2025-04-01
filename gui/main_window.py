@@ -28,6 +28,37 @@ class DiskSchedulingSimulator:
         self.style.configure('TLabel', background='#f0f0f0', font=('Arial', 10))
         self.style.configure('TButton', font=('Arial', 10), padding=5)
         
+        ### Algorithms description
+        self.algorithm_descriptions = {
+        "FCFS": "First-Come-First-Served (FCFS):\n"
+                "• Services requests in the order they arrive\n"
+                "• Simple but may result in high seek times\n"
+                "• No starvation, but poor performance for scattered requests",
+                
+        "SSTF": "Shortest Seek Time First (SSTF):\n"
+                "• Services the nearest request to the current head position\n"
+                "• Reduces average seek time compared to FCFS\n"
+                "• May cause starvation for distant requests",
+                
+        "SCAN": "SCAN (Elevator Algorithm):\n"
+                "• Moves the head back and forth across the disk\n"
+                "• Services requests in one direction until the end, then reverses\n"
+                "• Fairer than SSTF but may have longer wait times",
+                
+        "C-SCAN": "C-SCAN (Circular SCAN):\n"
+                  "• Similar to SCAN but resets to the start after reaching the end\n"
+                  "• Treats the disk as a circular list (no reversal)\n"
+                  "• More uniform wait times than SCAN",
+                  
+        "LOOK": "LOOK Algorithm:\n"
+                "• Like SCAN but reverses direction after the last request\n"
+                "• More efficient than SCAN by avoiding unnecessary seeks",
+                
+        "C-LOOK": "C-LOOK Algorithm:\n"
+                  "• Like C-SCAN but only travels to the last request\n"
+                  "• Combines benefits of C-SCAN and LOOK"
+        }
+
         self.create_widgets()
 
     def open_new_window(self):
@@ -118,6 +149,17 @@ class DiskSchedulingSimulator:
 
         self.display_results(output_text)
 
+
+    def update_description(self, *args):
+        """Update the description text when algorithm changes"""
+        algo = self.algorithm_var.get()
+        description = self.algorithm_descriptions.get(algo, "No description available")
+        
+        self.desc_text.config(state='normal')
+        self.desc_text.delete('1.0', tk.END)
+        self.desc_text.insert(tk.END, description)
+        self.desc_text.config(state='disabled')
+
     # Display results in the Text widget
     def display_results(self, text):
         self.result_text.config(state='normal')
@@ -173,6 +215,37 @@ class DiskSchedulingSimulator:
         self.algorithm_menu = ttk.OptionMenu(input_frame, self.algorithm_var, *algorithms)
         self.algorithm_menu.grid(row=3, column=1, sticky=tk.W, padx=5, pady=5)
         
+        ttk.Label(input_frame, text="Algorithm Description:").grid(row=5, column=0, sticky=tk.W, pady=5)
+    
+        ### Create a text widget for the description
+        self.desc_text = tk.Text(input_frame, height=6, width=50, wrap=tk.WORD, 
+                                state='disabled', bg='#f5f5f5', relief='solid')
+        self.desc_text.grid(row=5, column=1, padx=5, pady=5, sticky=tk.W)
+
+        # With this:
+        # Create a frame to hold both text widget and scrollbar
+        desc_frame = ttk.Frame(input_frame)
+        input_frame.grid_columnconfigure(1, weight=1)  # Makes column 1 expandable
+        desc_frame.grid(row=5, column=1, padx=5, pady=5, sticky='nsew')
+
+        # Text widget
+        self.desc_text = tk.Text(desc_frame, height=6, width=50, wrap=tk.WORD,
+                                state='disabled', bg='#f5f5f5', relief='solid')
+        self.desc_text.pack(side='left', fill='both', expand=True)
+
+        # Scrollbar
+        scrollbar = ttk.Scrollbar(desc_frame, orient='vertical', command=self.desc_text.yview)
+        scrollbar.pack(side='right', fill='y')
+
+        # Link text widget to scrollbar
+        self.desc_text.config(yscrollcommand=scrollbar.set)
+        
+        # Add trace to update description when algorithm changes
+        self.algorithm_var.trace_add('write', self.update_description)
+        
+        # Initial description update
+        self.update_description()
+
         # Direction Selection
         ttk.Label(input_frame, text="Direction:").grid(row=4, column=0, sticky=tk.W, pady=5)
         self.direction_var = tk.StringVar(value="right")
@@ -273,4 +346,4 @@ if __name__ == "__main__":
     app = DiskSchedulingSimulator(root)
     root.mainloop()
 
-#v2
+#v3
