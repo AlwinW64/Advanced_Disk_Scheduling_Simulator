@@ -52,14 +52,13 @@ python main.py
 📸 Screenshots
 
 Main Window:
+![Main Window](images/main_window.png)
 
-
+Graph:
+![Graph](images/graph.png)
 
 Algorithm Comparison:
-
-
-
-
+![Compare](images/compare.png)
 
 
 🛠️ Project Structure
