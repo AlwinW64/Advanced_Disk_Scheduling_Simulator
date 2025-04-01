@@ -12,7 +12,14 @@ class DiskSchedulingSimulator:
     def __init__(self, root):
         self.root = root
         self.root.title("Disk Scheduling Simulator")
-        self.root.geometry("820x600")
+
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
+        window_width = screen_width // 2
+        window_height = screen_height
+
+        self.root.geometry(f"{window_width}x{window_height}+0+0")
         self.root.resizable(True, True)
         
         # Configure style
