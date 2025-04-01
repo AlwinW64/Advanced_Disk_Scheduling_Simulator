@@ -59,7 +59,219 @@ class DiskSchedulingSimulator:
                   "• Combines benefits of C-SCAN and LOOK"
         }
 
+        self.detailed_descriptions = {
+            "FCFS": {
+                "title": "First-Come-First-Served (FCFS)",
+                "description": """FCFS (First Come First Serve) is simplest disk scheduling algorithm. Each requests are taken/executed in the sequence of their arrival in the disk queue. As a result, there is no starvation in this algorithm. However, it isn't fast compared to other algorithms.
+                \nBest for: Simple systems with uniform request distribution.""",
+                "Advantages": [
+                    "• Easy to implement",
+                    "• There is no starvation in FCFS.",
+                    "• FCFS is simple and straight forward approach which means there are no indefinite delays.",
+                    "• In FCFS, fair chance given to each request."
+                ],
+                "Disadvantages": [
+                    "• FCFS isn't considered an efficient and optimized approach.",
+                    "• FCFS can be time consuming."
+                ],
+                "time_complexity": "O(n)",
+
+            },
+            "SSTF": {
+                "title": "Shortest Seek Time First (SSTF)",
+
+                "description": """In SSTF (Shortest Seek Time First) disk scheduling algorithm we have to calculate the seek time first. 
+                That is, before serving any request, seek time is calculated for each request and then the request with least seek time will be served. 
+                If we define in terms of hardware then, the request which are closure to disk head position will be served first. 
+                SSTF also aims to overcome some of the limitations in FCFS.
+                \nBest for: Systems where average response time is critical.""",
+
+                "Advantages": [
+                    "• Better Performance compared to FCFS.",
+                    "• Response time and waiting time is less.",
+                    "• Increased throughput, helps in Batch Processing System.",
+                    "• Low Latency: Nearby requests get serviced quickly."
+                ],
+                'Disadvantages': [
+                    "• Starvation Risk: Distant requests may wait indefinitely if new closer requests keep arriving.",
+                    "• Non-Predictable: Worst-case seek time can be high (unlike SCAN/C-SCAN).",
+                    "• Requires knowing all pending requests",
+                    "• Not optimal for constantly changing workloads"
+                ],
+                "time_complexity": "O(n log n) - due to finding closest request",
+            },
+
+            "SCAN": {
+                "title": "SCAN (Elevator Algorithm)",
+
+                "description": """Scan is often called Elevator Scheduling Algorithm, due to the way it works. 
+                In SCAN, disk arm starts from one end of the disk and executes all the requests in its way till it reaches the other end. 
+                As soon as it reaches the other end, it reverses its direction, 
+                hence it moves back and forth continuously (like an elevator) to access the disk""",
+
+                "Advantages": [
+                    "• Predictable Performance: Services requests in a back-and-forth pattern (like an elevator), Provides consistent average wait times.",
+                    "• No Starvation: All requests are serviced as the head passes them. Fairer than SSTF for distant requests.",
+                    "• Good for Heavy Loads: Efficiently handles high request volumes. Throughput remains stable under load.",
+                    "• Directional Efficiency: Services all requests in one direction before reversing. Minimizes unnecessary head movement."
+                ],
+                'Disadvantages': [
+                    "• Long Wait Times for Some: Requests at opposite end wait until full scan completes. Worst-case delay = 2 x full disk traversal time.",
+                    "• Over-Servicing: Always goes to disk end even if no requests exist there. Wasted seeks (fixed in LOOK variant).",
+                    "• Variable Response Time: Request service time depends on head position/direction.",
+                    "• Implementation Complexity: Requires tracking head direction. Needs request sorting."
+                ],
+
+                "time_complexity": "O(n log n)"
+            },
+
+            "C-SCAN": {
+                "title": "C-SCAN (Circular SCAN)",
+
+                "description": """C-SCAN is a modified version of SCAN and deals with its inefficiency in servicing the requests. 
+                It moves the head from one end to other end servicing all the requests. As soon as the head reaches the other end, 
+                it returns to the beginning without servicing any requests and starts servicing again from the beginning to the other end.""",
+
+                "Advantages": [
+                    "• Uniform Wait Times: Eliminates SCAN's directional bias by always returning to track 0. Provides fairer service than SCAN for edge tracks.",
+                    "• Higher Throughput: More consistent performance than SCAN under heavy loads. Services ~10-15% more requests per revolution than SCAN.",
+                    "• Predictable Performance: Fixed cyclical pattern (end → 0 → requests → end). Easier to calculate worst-case latency.",
+                    "• Starvation-Free: All requests get serviced within 2 full disk passes maximum."
+                ],
+                'Disadvantages': [
+                    "• Inefficient Empty Travel: Always moves to physical disk end (even with no requests). Wastes ~20-30% more seeks than LOOK variant.",
+                    "• Long Latency for Certain Requests: Requests just passed may wait nearly 2 full cycles. Worst-case delay = 2 x disk size.",
+                    "• Implementation Complexity: Requires tracking virtual 'wrap-around' point. Harder to debug than FCFS/SSTF.",
+                    "• Poor Light-Load Performance: Overhead of full sweeps isn't justified with few requests."
+                ],
+
+                "time_complexity": "O(n log n) - due to sorting"
+            },
+
+            "LOOK": {
+                "title": "LOOK",
+
+                "description": """Look disk scheduling is another type of disk scheduling algorithm. 
+                Look scheduling is an enhanced version of SCAN disk scheduling. 
+                Look disk scheduling is the same as SCAN disk scheduling, but in this scheduling, instead of going till the last track, 
+                we go till the last request and then change the direction.""",
+
+                "Advantages": [
+                    "• Efficient Seek Utilization: Only travels as far as the last request in each direction (unlike SCAN/C-SCAN). Eliminates empty end-to-end seeks (30-40%% less movement than SCAN)",
+                    "• Improved Average Performance: 15-25%% faster average seek time than SCAN. Better throughput than C-SCAN for asymmetric workloads.",
+                    "• Starvation-Free: Guarantees service within 1 full sweep. More consistent latency than SSTF",
+                    "• Adaptive Direction Handling: Dynamically reverses at last request (not physical disk end). Intelligent for bursty request patterns."
+                ],
+                'Disadvantages': [
+                    "• Variable Worst-Case Latency: New edge requests may wait nearly full sweep time. Less predictable than C-SCAN.",
+                    "• Implementation Complexity: Requires tracking both direction and request boundaries. More edge cases than FCFS.",
+                    "• Moderate Sorting Overhead: Still requires O(n log n) sorting like SCAN. Not as lightweight as FCFS."
+                ],
+
+                "time_complexity": "O(n log n) - due to sorting"
+            },
+
+            "C-LOOK": {
+                "title": "C-LOOK (Circular LOOK) Algorithm",
+
+                "description": """C-LOOK takes the advantages of both the disk scheduling C-SCAN, and Look disk scheduling. 
+                In C-look scheduling, the disk arm moves and service each request till the head reaches its highest request, 
+                and after that, the disk arm jumps to the lowest cylinder without servicing any request, 
+                and the disk arm moves further and service those requests which are remaining.""",
+
+                "Advantages": [
+                    "• Optimized Seek Pattern: Only services requests in one direction (like C-SCAN). Jumps from last to first request without traveling unused areas (unlike C-SCAN). 40-50%% less head movement than SCAN.",
+                    "• High Throughput: Services 15-20% more requests per revolution than LOOK. Ideal for high-density request clusters.",
+                    "• Starvation-Free: All requests serviced within 1.5 disk cycles maximum.",
+                    "• Predictable Performance: More consistent latency than LOOK. Clear worst-case bound = 2 x (last_request - first_request)."
+                ],
+                'Disadvantages': [
+                    "• Directional Bias: Favors requests in the current scan direction. New opposite-direction requests wait longer.",
+                    "• Implementation Complexity: Requires tracking both ends of active request zone. Edge cases when requests span disk boundaries.",
+                    "• Moderate Sorting Overhead: Still requires O(n log n) sorting. Not as lightweight as FCFS."
+                ],
+
+                "time_complexity": "O(n log n) - due to sorting"
+            }
+
+        }
+
         self.create_widgets()
+
+    def show_algorithm_details(self):
+        """Create a detailed algorithm information window"""
+        details_win = tk.Toplevel(self.root)
+        details_win.title("Detailed ")
+        details_win.geometry("600x500+100+100")
+        
+        # Main container
+        container = ttk.Frame(details_win)
+        container.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+        
+        # Algorithm selection
+        ttk.Label(container, text="Select Algorithm:").pack(pady=5)
+        algo_var = tk.StringVar(value="FCFS")
+        ttk.OptionMenu(container, algo_var, "FCFS", *self.detailed_descriptions.keys()).pack()
+        
+        # Create text widget with scrollbars
+        text_frame = ttk.Frame(container)
+        text_frame.pack(fill=tk.BOTH, expand=True, pady=10)
+        
+        text = tk.Text(text_frame, wrap=tk.WORD, state='disabled', 
+                    font=('Arial', 11), padx=10, pady=10)
+        vsb = ttk.Scrollbar(text_frame, orient="vertical", command=text.yview)
+        hsb = ttk.Scrollbar(text_frame, orient="horizontal", command=text.xview)
+        text.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+        
+        text.grid(row=0, column=0, sticky="nsew")
+        vsb.grid(row=0, column=1, sticky="ns")
+        hsb.grid(row=1, column=0, sticky="ew")
+        text_frame.grid_rowconfigure(0, weight=1)
+        text_frame.grid_columnconfigure(0, weight=1)
+        
+        def update_details(*args):
+            """Update the displayed details when algorithm changes"""
+            algo = algo_var.get()
+            details = self.detailed_descriptions.get(algo, {})
+            
+            text.config(state='normal')
+            text.delete(1.0, tk.END)
+            
+            # Add title
+            text.insert(tk.END, f"{details.get('title', '')}\n\n", "title")
+            text.tag_configure("title", font=('Arial', 14, 'bold'))
+            
+            # Add description
+            text.insert(tk.END, f"{details.get('description', '')}\n\n", "desc")
+            text.tag_configure("desc", font=('Arial', 11, 'italic'))
+            
+            # Add Advantages
+            text.insert(tk.END, "Advantages:\n", "subtitle")
+            text.tag_configure("subtitle", font=('Arial', 12, 'underline'))
+
+            for char in details.get('Advantages', []):
+                text.insert(tk.END, f"{char}\n")
+
+            # Add Disadvantages
+            text.insert(tk.END, "\nDisadvantages:\n", "subtitle")
+            text.tag_configure("subtitle", font=('Arial', 12, 'underline'))
+            
+            for char in details.get('Disadvantages', []):
+                text.insert(tk.END, f"{char}\n")
+            
+            # Add technical details
+            text.insert(tk.END, "\nTechnical Details:\n", "subtitle")
+            text.insert(tk.END, f"Time Complexity: {details.get('time_complexity', '')}\n")
+            
+            text.config(state='disabled')
+        
+        # Initial update and trace
+        algo_var.trace_add('write', update_details)
+        update_details()
+        
+        # Close button
+        ttk.Button(container, text="Close", command=details_win.destroy).pack(pady=10)
+
 
     def open_new_window(self):
         new_window = tk.Toplevel(self.root)
@@ -264,6 +476,11 @@ class DiskSchedulingSimulator:
         self.clear_button = ttk.Button(button_frame, text="Clear", command=self.clear_fields)
         self.clear_button.pack(side=tk.LEFT, padx=10)
 
+        self.details_button = ttk.Button(button_frame, 
+                                text="Detailed Description",
+                                command=self.show_algorithm_details)
+        self.details_button.pack(side=tk.LEFT, padx=10)
+
 
         # Status bar
         self.status_var = tk.StringVar()
@@ -346,4 +563,4 @@ if __name__ == "__main__":
     app = DiskSchedulingSimulator(root)
     root.mainloop()
 
-#v3
+#v4
