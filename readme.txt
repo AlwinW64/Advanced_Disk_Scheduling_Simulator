@@ -52,7 +52,8 @@ python main.py
 📸 Screenshots
 
 Main Window:
-![Main Window](images/main_window.png)
+![Main Window](https://raw.githubusercontent.com/AlwinW64/Advanced_Disk_Scheduling_Simulator/main/images/main_window.png)
+
 
 Graph:
 ![Main Window](images/graph.png)
