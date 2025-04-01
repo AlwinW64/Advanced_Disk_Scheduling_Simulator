@@ -55,10 +55,10 @@ Main Window:
 ![Main Window](images/main_window.png)
 
 Graph:
-![Graph](images/graph.png)
+![Main Window](images/graph.png)
 
 Algorithm Comparison:
-![Compare](images/compare.png)
+![Main Window](images/compare.png)
 
 
 🛠️ Project Structure
