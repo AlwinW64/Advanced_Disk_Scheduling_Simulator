@@ -424,7 +424,12 @@ class DiskSchedulingSimulator:
         ttk.Label(input_frame, text="Algorithm:").grid(row=3, column=0, sticky=tk.W, pady=5)
         self.algorithm_var = tk.StringVar(value="FCFS")
         algorithms = ["FCFS", "SSTF", "SCAN", "C-SCAN", "LOOK", "C-LOOK"]
-        self.algorithm_menu = ttk.OptionMenu(input_frame, self.algorithm_var, *algorithms)
+        self.algorithm_menu = ttk.OptionMenu(
+            input_frame,
+            self.algorithm_var,
+            self.algorithm_var.get(),  # Use the variable's value
+            *algorithms
+        )
         self.algorithm_menu.grid(row=3, column=1, sticky=tk.W, padx=5, pady=5)
         
         ttk.Label(input_frame, text="Algorithm Description:").grid(row=5, column=0, sticky=tk.W, pady=5)
@@ -458,13 +463,35 @@ class DiskSchedulingSimulator:
         # Initial description update
         self.update_description()
 
-        # Direction Selection
+        """# Direction Selection
         ttk.Label(input_frame, text="Direction:").grid(row=4, column=0, sticky=tk.W, pady=5)
         self.direction_var = tk.StringVar(value="right")
         directions = ["right", "left"]
         self.direction_menu = ttk.OptionMenu(input_frame, self.direction_var, *directions)
         self.direction_menu.grid(row=4, column=1, sticky=tk.W, padx=5, pady=5)
-        
+        """
+        # Direction Selection - Improved Version
+        ttk.Label(input_frame, text="Direction:").grid(row=4, column=0, sticky=tk.W, pady=5)
+        self.direction_var = tk.StringVar(value="right")
+        directions = ["right", "left"]
+
+        # Create OptionMenu with proper initialization
+        self.direction_menu = ttk.OptionMenu(
+            input_frame,
+            self.direction_var,
+            "right",  # Default value
+            *directions
+        )
+        self.direction_menu.grid(row=4, column=1, sticky=tk.W, padx=5, pady=5)
+
+        # Style the dropdown to match algorithm selection
+        self.style.configure('Direction.TMenubutton',
+            padding=5,
+            relief='raised',
+            width=8  # Smaller width for direction selector
+        )
+        self.direction_menu.configure(style='Direction.TMenubutton')
+                
         # Button frame
         button_frame = ttk.Frame(main_frame)
         button_frame.pack(fill=tk.X, pady=20)
