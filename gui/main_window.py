@@ -463,14 +463,7 @@ class DiskSchedulingSimulator:
         # Initial description update
         self.update_description()
 
-        """# Direction Selection
-        ttk.Label(input_frame, text="Direction:").grid(row=4, column=0, sticky=tk.W, pady=5)
-        self.direction_var = tk.StringVar(value="right")
-        directions = ["right", "left"]
-        self.direction_menu = ttk.OptionMenu(input_frame, self.direction_var, *directions)
-        self.direction_menu.grid(row=4, column=1, sticky=tk.W, padx=5, pady=5)
-        """
-        # Direction Selection - Improved Version
+        # Direction Selection
         ttk.Label(input_frame, text="Direction:").grid(row=4, column=0, sticky=tk.W, pady=5)
         self.direction_var = tk.StringVar(value="right")
         directions = ["right", "left"]
@@ -595,4 +588,4 @@ if __name__ == "__main__":
     app = DiskSchedulingSimulator(root)
     root.mainloop()
 
-#v4
+#v5
