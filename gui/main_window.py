@@ -497,7 +497,12 @@ class DiskSchedulingSimulator:
         button_frame.pack(fill=tk.X, pady=20)
         
         # Buttons
-        self.run_button = ttk.Button(button_frame, text="Run Simulation", command=self.start_simulation)
+        style = ttk.Style()
+        style.configure("Custom.TButton")
+        style.theme_use('clam')
+
+
+        self.run_button = ttk.Button(button_frame, text="Run Simulation", command=self.start_simulation, style="Custom.TButton")
         self.run_button.pack(side=tk.LEFT, padx=10)
         
         self.clear_button = ttk.Button(button_frame, text="Clear", command=self.clear_fields)
