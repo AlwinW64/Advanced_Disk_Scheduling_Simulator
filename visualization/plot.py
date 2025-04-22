@@ -1,69 +1,67 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-import numpy as np
 
+def add_turnaround_point(sequence, head, disk_size=200):
+    modified_seq = [head]
+    
+    for i in range(len(sequence) - 1):
+        curr = sequence[i]
+        next_ = sequence[i + 1]
+        modified_seq.append(curr)
+
+        # Detect direction change
+        if (next_ - curr) * (curr - modified_seq[-2]) < 0:
+            if curr < next_ and (disk_size - 1) not in modified_seq:
+                modified_seq.append(disk_size - 1)
+            elif curr > next_ and 0 not in modified_seq:
+                modified_seq.append(0)
+
+    modified_seq.append(sequence[-1])
+    
+    # Additional check: if it's SCAN or C-SCAN but didn't reach end/start
+    if sequence[0] > head and (0 not in sequence and 0 not in modified_seq):
+        modified_seq.insert(1, 0)
+    elif sequence[0] < head and ((disk_size - 1) not in sequence and (disk_size - 1) not in modified_seq):
+        modified_seq.insert(1, disk_size - 1)
+    
+    return modified_seq
+# Animation function
 def animate_sequence(sequence, head, disk_size=200):
-    fig, ax = plt.subplots(figsize=(12, 6))  # Unified figure size
-    
-    # Initialize plot elements
-    line, = ax.plot([], [], 'b-o', label="Disk Head Movement", alpha=0.7)
-    current_point = ax.scatter([], [], color='red', s=100, label="Current Position")
-    initial_point = ax.scatter([head], [0], color='green', s=100, label="Initial Position")
-    
-    # Configure axes
-    ax.set_title(f"Disk Head Movement (Disk Size: {disk_size})", fontsize=14)
-    ax.set_xlabel("Track Position", fontsize=12)
-    ax.set_ylabel("Request Step", fontsize=12)
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Optional: Position the animation window to the right
+    manager = plt.get_current_fig_manager()
+    try:
+        screen_width = manager.window.winfo_screenwidth()
+        screen_height = manager.window.winfo_screenheight()
+        manager.window.geometry(f"{screen_width//2}x{screen_height}+{screen_width//2}+0")
+    except:
+        pass  # For non-GUI environments
+
+    line, = ax.plot([], [], 'b-o', label="Disk Head Movement")
+    current_point = ax.scatter([], [], color='r', s=100, label="Current Position")
+    initial_point = ax.scatter([head], [0], color='g', s=100, label="Initial Position")
+
+    ax.set_title(f"Disk Head Movement Animation (Disk Size: {disk_size})")
+    ax.set_xlabel("Track Position")
+    ax.set_ylabel("Request Step")
     ax.set_xlim(0, disk_size)
     ax.set_ylim(-0.5, len(sequence) - 0.5)
-    ax.invert_yaxis()  # Top-to-bottom request order
-    ax.grid(True, linestyle='--', alpha=0.6)
-    ax.legend(loc='upper right')
-    
-    # Animation update function
+    ax.invert_yaxis()
+    ax.grid(True, linestyle='--', alpha=0.7)
+    ax.legend()
+
     def update(frame):
         x_data = sequence[:frame + 1]
-        y_data = range(frame + 1)
+        y_data = list(range(frame + 1))
         line.set_data(x_data, y_data)
         if frame < len(sequence):
             current_point.set_offsets([[sequence[frame], frame]])
         return line, current_point
-    
-    # Create and return animation
-    ani = FuncAnimation(
-        fig, update, frames=len(sequence),
-        interval=500, blit=True, repeat=False
-    )
-    plt.tight_layout()
-    return ani  # Critical: Return to prevent garbage collection
 
-def plot_comparison(results, head, disk_size):
-    fig, ax = plt.subplots(figsize=(12, 6))  # Unified figure size
-    colors = plt.cm.tab10.colors  # Consistent color scheme
-    
-    # Plot each algorithm's path
-    for i, (algo, seq, seek) in enumerate(results):
-        ax.plot(seq, range(len(seq)), 'o-', 
-                color=colors[i], 
-                label=f"{algo} (Seek: {seek})", 
-                alpha=0.7)
-        ax.scatter([head], [-1], color=colors[i], marker='s', s=100)
-    
-    # Customize plot
-    ax.set_title(f"Algorithm Comparison (Disk Size: {disk_size})", fontsize=14)
-    ax.set_xlabel("Track Position", fontsize=12)
-    ax.set_ylabel("Request Order", fontsize=12)
-    ax.set_xlim(0, disk_size)
-    ax.grid(True, linestyle='--', alpha=0.6)
-    ax.legend(loc='upper right')
-    
-    # Annotate initial head position
-    ax.annotate(
-        f"Initial Head: {head}", 
-        xy=(head, -1), 
-        xytext=(head, -2), 
-        ha='center', 
-        arrowprops=dict(facecolor='black', shrink=0.05)
-    )
+    ani = FuncAnimation(fig, update, frames=len(sequence),
+                        interval=500, blit=True, repeat=False)
+
     plt.tight_layout()
     plt.show()
+    return ani
