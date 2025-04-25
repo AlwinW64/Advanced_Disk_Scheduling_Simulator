@@ -281,7 +281,7 @@ class DiskSchedulingSimulator:
         # Input Fields
         tk.Label(new_window, text="Enter Requests (comma separated):").grid(row=0, column=0, sticky="w", padx=10, pady=5)
         self.request_entry = tk.Entry(new_window, width=40)
-        self.request_entry.grid(row=0, column=1, padx=10, pady=5)
+        self.request_entry.grid(row=0, column=1, sticky="w",padx=10, pady=5)
 
         tk.Label(new_window, text="Initial Head Position:").grid(row=1, column=0, sticky="w", padx=10, pady=5)
         self.head_entry = tk.Entry(new_window)
@@ -463,7 +463,14 @@ class DiskSchedulingSimulator:
         # Initial description update
         self.update_description()
 
-        # Direction Selection
+        """# Direction Selection
+        ttk.Label(input_frame, text="Direction:").grid(row=4, column=0, sticky=tk.W, pady=5)
+        self.direction_var = tk.StringVar(value="right")
+        directions = ["right", "left"]
+        self.direction_menu = ttk.OptionMenu(input_frame, self.direction_var, *directions)
+        self.direction_menu.grid(row=4, column=1, sticky=tk.W, padx=5, pady=5)
+        """
+        # Direction Selection - Improved Version
         ttk.Label(input_frame, text="Direction:").grid(row=4, column=0, sticky=tk.W, pady=5)
         self.direction_var = tk.StringVar(value="right")
         directions = ["right", "left"]
@@ -494,12 +501,32 @@ class DiskSchedulingSimulator:
         style.configure("Custom.TButton")
         style.theme_use('clam')
 
+        style = ttk.Style()
+        style.configure("Custom.TButton", background="green", foreground="white")
+
+# For Windows theme compatibility (optional but useful)
+        style.map("Custom.TButton",
+                background=[("active", "#00cc00")],  # Lighter green when active
+                foreground=[("disabled", "gray")])
 
         self.run_button = ttk.Button(button_frame, text="Run Simulation", command=self.start_simulation, style="Custom.TButton")
         self.run_button.pack(side=tk.LEFT, padx=10)
         
-        self.clear_button = ttk.Button(button_frame, text="Clear", command=self.clear_fields)
+
+        
+        # Define the red button style
+        style = ttk.Style()
+        style.theme_use("clam")  # Optional: improves styling compatibility
+
+        style.configure("Red.TButton", background="red", foreground="white")
+        style.map("Red.TButton",
+                background=[("active", "#cc0000")],  # Darker red when active
+                foreground=[("disabled", "gray")])
+
+        # Apply the style to the button
+        self.clear_button = ttk.Button(button_frame, text="Clear", command=self.clear_fields, style="Red.TButton")
         self.clear_button.pack(side=tk.LEFT, padx=10)
+
 
         self.details_button = ttk.Button(button_frame, 
                                 text="Detailed Description",
@@ -588,4 +615,4 @@ if __name__ == "__main__":
     app = DiskSchedulingSimulator(root)
     root.mainloop()
 
-#v5
+#v4
