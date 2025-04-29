@@ -38,28 +38,51 @@ def animate_sequence(sequence, head, disk_size=200):
     except:
         pass  # For non-GUI environments
 
-    line, = ax.plot([], [], 'b-o', label="Disk Head Movement")
+    # Create the line plot starting from head position
+    line, = ax.plot([head], [-1], 'b-o', label="Disk Head Movement")  # Start at y=-1
     current_point = ax.scatter([], [], color='r', s=100, label="Current Position")
-    initial_point = ax.scatter([head], [0], color='g', s=100, label="Initial Position")
+    initial_point = ax.scatter([head], [-1], color='g', s=100, label="Initial Position")  # Position at y=-1
 
+    # Get unique points from sequence for x-axis ticks
+    unique_points = sorted(set(sequence + [head]))
+    
     ax.set_title(f"Disk Head Movement Animation (Disk Size: {disk_size})")
     ax.set_xlabel("Track Position")
-    ax.set_ylabel("Request Step")
     ax.set_xlim(0, disk_size)
-    ax.set_ylim(-0.5, len(sequence) - 0.5)
+    ax.set_ylim(-1.5, len(sequence) - 0.5)  # Extend y-axis to show initial position
     ax.invert_yaxis()
     ax.grid(True, linestyle='--', alpha=0.7)
     ax.legend()
+    
+    # Set x-axis ticks to only show the points that are actually used
+    ax.set_xticks(unique_points)
+    ax.set_xticklabels(unique_points, rotation=45)  # Rotate labels for better readability
+    
+    # Move x-axis to top and hide y-axis
+    ax.xaxis.tick_top()
+    ax.xaxis.set_label_position('top')
+    ax.yaxis.set_visible(False)
+    
+    # Remove y-axis label
+    ax.set_ylabel("")
 
     def update(frame):
-        x_data = sequence[:frame + 1]
-        y_data = list(range(frame + 1))
+        if frame == 0:
+            # First frame: just show initial head position
+            x_data = [head]
+            y_data = [-1]
+            current_point.set_offsets([[head, -1]])
+        else:
+            # Subsequent frames: show movement from head to sequence points
+            x_data = [head] + sequence[:frame]
+            y_data = [-1] + list(range(frame))
+            if frame < len(sequence):
+                current_point.set_offsets([[sequence[frame-1], frame-1]])
+        
         line.set_data(x_data, y_data)
-        if frame < len(sequence):
-            current_point.set_offsets([[sequence[frame], frame]])
         return line, current_point
 
-    ani = FuncAnimation(fig, update, frames=len(sequence),
+    ani = FuncAnimation(fig, update, frames=len(sequence) + 1,  # +1 to include initial position
                         interval=500, blit=True, repeat=False)
 
     plt.tight_layout()
