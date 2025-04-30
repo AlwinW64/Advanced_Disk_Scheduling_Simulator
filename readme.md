@@ -66,8 +66,8 @@ Algorithm Comparison:
 
 disk-scheduling-simulator/
 │── main.py               # Main GUI Application
-│── algorithms.py         # Disk Scheduling Algorithms
-│── visualization.py      # Graph Plotting & Animations
+│── core         # Disk Scheduling Algorithms
+│── visualization      # Graph Plotting & Animations
 │── README.md             # Project Documentation
 │── requirements.txt      # Dependencies
 │── screenshots/          # Images for README
